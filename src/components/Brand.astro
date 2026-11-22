@@ -1,0 +1,51 @@
+---
+// A product or company name with its logo, both links: <Brand name="podman" />, or with your own text:
+// <Brand name="bootc">bootable containers (bootc)</Brand>.
+// Logos live in public/brands/ and are drawn as the link's background (inlined SVGs' ids would clash), so
+// the link stays plain text and never breaks away from its surrounding punctuation.
+const brands = {
+  redhat: { label: 'Red Hat', logo: '/brands/redhat.svg', url: 'https://www.redhat.com' },
+  podman: { label: 'Podman', logo: '/brands/podman.png', url: 'https://podman.io' },
+  'podman-desktop': {
+    label: 'Podman Desktop',
+    logo: '/brands/podman-desktop.svg',
+    url: 'https://podman-desktop.io',
+  },
+  bootc: { label: 'bootc', logo: '/brands/bootc.svg', url: 'https://bootc-dev.github.io/bootc/' },
+  immich: { label: 'Immich', logo: '/brands/immich.svg', url: 'https://immich.app' },
+  paperless: { label: 'Paperless-ngx', logo: '/brands/paperless.svg', url: 'https://docs.paperless-ngx.com' },
+  vaultwarden: {
+    label: 'Vaultwarden',
+    logo: '/brands/vaultwarden.svg',
+    logoDark: '/brands/vaultwarden-dark.svg',
+    url: 'https://github.com/dani-garcia/vaultwarden',
+  },
+  ugreen: { label: 'UGREEN', logo: '/brands/ugreen.png', url: 'https://ai-eu.ugreen.com' },
+  leboncoin: { label: 'leboncoin', logo: '/brands/leboncoin.png', url: 'https://www.leboncoin.fr' },
+  synology: { label: 'Synology', logo: '/brands/synology.png', url: 'https://www.synology.com' },
+} as const;
+
+interface Props {
+  name: keyof typeof brands;
+}
+
+const brand: { label: string; logo: string; logoDark?: string; url: string } = brands[Astro.props.name];
+const logos = `--logo: url(${brand.logo}); --logo-dark: url(${brand.logoDark ?? brand.logo})`;
+---
+
+<a class="brand" href={brand.url} target="_blank" rel="noopener noreferrer" style={logos}><slot>{brand.label}</slot></a>
+
+<style>
+  /* A border, not text-decoration, so the underline runs under the logo too. */
+  .brand {
+    padding-bottom: 1px;
+    padding-left: 1.25em;
+    border-bottom: 2px solid var(--accent);
+    background: var(--logo) no-repeat left center / 1em 1em;
+    text-decoration: none;
+  }
+  /* For logos that vanish on a dark background (logoDark). */
+  :global([data-theme='dark']) .brand {
+    background-image: var(--logo-dark);
+  }
+</style>

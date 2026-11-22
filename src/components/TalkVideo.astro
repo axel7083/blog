@@ -1,0 +1,38 @@
+---
+/**
+ * Native <video> player for conference recordings (e.g. video.fosdem.org).
+ * preload="none": nothing is downloaded until the reader presses play.
+ */
+interface Props {
+  title: string;
+  webm?: string;
+  mp4?: string;
+}
+
+const { title, webm, mp4 } = Astro.props;
+---
+
+<figure>
+  <video controls preload="none" aria-label={title}>
+    {webm && <source src={webm} type="video/webm" />}
+    {mp4 && <source src={mp4} type="video/mp4" />}
+  </video>
+  <figcaption class="stencil">Recording · {title}</figcaption>
+</figure>
+
+<style>
+  figure {
+    margin: 1.5rem 0;
+  }
+  video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-left: 6px solid var(--accent);
+    background: var(--frame);
+  }
+  figcaption {
+    margin-top: 0.5rem;
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+// One spec in <Specs>: a Lucide icon, a stencil label, and the value (markdown allowed) as children.
+import { icons, type IconName } from './icons';
+
+interface Props {
+  icon: IconName;
+  label: string;
+}
+
+const { icon, label } = Astro.props;
+---
+
+<div class="spec">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    set:html={icons[icon]}
+  />
+  <dt class="stencil">{label}</dt>
+  <dd><slot /></dd>
+</div>
+
+<style>
+  .spec {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    column-gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  svg {
+    grid-row: span 2;
+    width: 1.75rem;
+    height: 1.75rem;
+    color: var(--accent);
+  }
+  dt {
+    color: var(--muted);
+  }
+  dd {
+    margin: 0.15rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  dd :global(p) {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <ul class="cargo">
+      {tags.map((tag) => (
+        <li>{tag}</li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .cargo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    padding: 0.1rem 0.6rem;
+    border: 2px solid var(--fg);
+    background: var(--surface);
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  li:first-child {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+  }
+</style>

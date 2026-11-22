@@ -1,0 +1,198 @@
+---
+// One horizontal stacked bar on a fixed scale, rendered at build time (no client JS).
+// Hover shows each segment's breakdown (native tooltip); a table view sits under the chart.
+// Colours: the dataviz reference palette's first three categorical slots, validated against the
+// site's light (--bg) and dark backgrounds; light-mode contrast is low, hence the labels and table.
+interface Segment {
+  label: string;
+  value: number;
+  detail?: string;
+}
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  segments: Segment[];
+  max: number;
+  ticks: number[];
+  unit: string;
+  totalLabel?: string;
+}
+
+const { title, subtitle, segments, max, ticks, unit, totalLabel = 'Total' } = Astro.props;
+const total = segments.reduce((sum, s) => sum + s.value, 0);
+const pct = (v: number) => `${(v / max) * 100}%`;
+const fmt = (v: number) => `${v.toLocaleString('en', { maximumFractionDigits: 2 })} ${unit}`;
+---
+
+<figure class="stack">
+  <figcaption>
+    <strong>{title}</strong>
+    {subtitle && <span>{subtitle}</span>}
+  </figcaption>
+
+  <ul class="legend">
+    {
+      segments.map((s, i) => (
+        <li>
+          <i class={`c${i + 1}`} />
+          {s.label} <b>{fmt(s.value)}</b>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="plot">
+    <div class="bar" style={`width: ${pct(total)}`}>
+      {
+        segments.map((s, i) => (
+          <span
+            class={`c${i + 1}`}
+            style={`flex-grow: ${s.value}`}
+            title={`${s.label}: ${fmt(s.value)}${s.detail ? ` (${s.detail})` : ''}`}
+          />
+        ))
+      }
+    </div>
+    <span class="total" style={`left: ${pct(total)}`}>{totalLabel} ≈ {fmt(total)}</span>
+    <div class="axis" aria-hidden="true">
+      {
+        ticks.map((t) => (
+          <span style={`left: ${pct(t)}`}>
+            {t} {unit}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+
+  <details>
+    <summary>Show as a table</summary>
+    <table>
+      <thead>
+        <tr><th>App</th><th>Includes</th><th style="text-align:right">{unit}</th></tr>
+      </thead>
+      <tbody>
+        {
+          segments.map((s) => (
+            <tr><td>{s.label}</td><td>{s.detail ?? ''}</td><td style="text-align:right">{s.value}</td></tr>
+          ))
+        }
+        <tr><td><strong>{totalLabel}</strong></td><td /><td style="text-align:right"><strong>{Math.round(total * 100) / 100}</strong></td></tr>
+      </tbody>
+    </table>
+  </details>
+</figure>
+
+<style>
+  .stack {
+    --c1: #2a78d6;
+    --c2: #eb6834;
+    --c3: #1baf7a;
+    margin: 2rem 0;
+  }
+  :global([data-theme='dark']) .stack {
+    --c1: #3987e5;
+    --c2: #d95926;
+    --c3: #199e70;
+  }
+  .c1 { background: var(--c1); }
+  .c2 { background: var(--c2); }
+  .c3 { background: var(--c3); }
+
+  figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 0.75rem;
+  }
+  figcaption span {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+  }
+  .legend i {
+    display: inline-block;
+    width: 0.7em;
+    height: 0.7em;
+    margin-right: 0.35em;
+    border-radius: 2px;
+  }
+  .legend b {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  .plot {
+    position: relative;
+    padding-bottom: 1.6rem;
+    border-left: 1px solid var(--border);
+  }
+  /* 2px background gap between segments; square at the baseline, rounded at the data end. */
+  .bar {
+    display: flex;
+    gap: 2px;
+    height: 1.75rem;
+  }
+  .bar span {
+    min-width: 3px;
+  }
+  .bar span:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+  .bar span:hover {
+    opacity: 0.8;
+  }
+  .total {
+    position: absolute;
+    top: 0;
+    padding-left: 0.5rem;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.75rem;
+    white-space: nowrap;
+  }
+  .axis {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 1.4rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+  }
+  .axis span {
+    position: absolute;
+    top: 0.3rem;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .axis span:first-child {
+    transform: none;
+  }
+  .axis span:last-child {
+    transform: translateX(-100%);
+  }
+
+  details {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+  }
+  summary {
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+</style>

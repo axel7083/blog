@@ -1,0 +1,16 @@
+---
+import octicons from '@primer/octicons';
+
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 16, class: className } = Astro.props;
+const icon = octicons[name];
+if (!icon) throw new Error(`Unknown octicon "${name}"`);
+const svg = icon.toSVG({ width: size, height: size, class: className, 'aria-hidden': 'true' });
+---
+
+<Fragment set:html={svg} />

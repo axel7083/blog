@@ -1,0 +1,35 @@
+---
+// An aside set off from the prose, e.g. <Note label="Disclosure">…</Note>. Same orange left edge as code
+// blocks, a stencil label, no other decoration.
+interface Props {
+  label?: string;
+}
+
+const { label = 'Note' } = Astro.props;
+---
+
+<aside class="note" aria-label={label}>
+  <span class="stencil">{label}</span>
+  <div><slot /></div>
+</aside>
+
+<style>
+  .note {
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    font-size: 0.9rem;
+  }
+  .stencil {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--muted);
+  }
+  .note :global(p) {
+    margin: 0;
+  }
+  .note :global(p + p) {
+    margin-top: 0.5rem;
+  }
+</style>

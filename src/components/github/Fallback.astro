@@ -1,0 +1,15 @@
+---
+import CardShell from './CardShell.astro';
+import Octicon from './Octicon.astro';
+
+interface Props {
+  href: string;
+  text: string;
+}
+
+const { href, text } = Astro.props;
+---
+
+<CardShell href={href} label={text}>
+  <span class="gh-muted"><Octicon name="mark-github" /> {text}</span>
+</CardShell>

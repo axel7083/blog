@@ -1,0 +1,122 @@
+---
+import type { SeriesContext } from '@/lib/series';
+
+interface Props {
+  context: SeriesContext;
+}
+
+const { series, index } = Astro.props.context;
+const href = `/series/${series.id}/`;
+---
+
+<nav class="series-box" aria-label={`Series: ${series.data.title}`}>
+  <details>
+    <summary>
+      <span class="stencil kicker">Series · Part {index + 1} of {series.parts.length}{series.data.status === 'ongoing' && ' · ongoing'}</span>
+      <span class="title">{series.data.title}</span>
+    </summary>
+    <ol>
+      {
+        series.parts.map((part, i) => (
+          <li>
+            <span class="num">{String(i + 1).padStart(2, '0')}</span>
+            {i === index ? (
+              <span aria-current="page">{part.data.title}</span>
+            ) : (
+              <a href={`/posts/${part.id}/`}>{part.data.title}</a>
+            )}
+            {part.data.draft && <span class="draft stencil">Draft</span>}
+          </li>
+        ))
+      }
+    </ol>
+    <a class="all stencil" href={href}>Series overview →</a>
+  </details>
+</nav>
+
+<style>
+  .series-box {
+    margin-bottom: 2rem;
+    border: 2px solid var(--fg);
+    border-left: 6px solid var(--accent);
+    background: var(--surface);
+  }
+  summary {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.7rem 2.5rem 0.7rem 1rem;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  /* Plain CSS chevron: no client JS. */
+  summary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--fg);
+    border-bottom: 2px solid var(--fg);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.15s;
+  }
+  details[open] summary::after {
+    transform: translateY(-30%) rotate(-135deg);
+  }
+  .kicker {
+    color: var(--accent-ink);
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  ol {
+    margin: 0;
+    padding: 0.25rem 1rem 0.5rem;
+    border-top: 1px solid var(--border);
+    list-style: none;
+  }
+  li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.3rem 0;
+  }
+  .num {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+  li a {
+    text-decoration: none;
+  }
+  li a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+  [aria-current] {
+    font-weight: 600;
+  }
+  [aria-current]::after {
+    content: ' ◂ you are here';
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+  }
+  .draft {
+    padding: 0 0.3rem;
+    border: 1px dashed var(--muted);
+    color: var(--muted);
+  }
+  .all {
+    display: inline-block;
+    margin: 0 1rem 0.8rem;
+  }
+</style>

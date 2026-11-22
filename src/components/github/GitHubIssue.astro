@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import { type Issue, formatDate, getIssue, safe } from '@/lib/github';
+import CardShell from './CardShell.astro';
+import Fallback from './Fallback.astro';
+import Labels from './Labels.astro';
+import Octicon from './Octicon.astro';
+
+interface Props {
+  /** "owner/name" */
+  repo: string;
+  number: number;
+}
+
+const { repo, number } = Astro.props;
+const data = await safe(() => getIssue(repo, number), `${repo}#${number}`);
+
+const states: Record<Issue['state'], { icon: string; text: string; color: string }> = {
+  open: { icon: 'issue-opened', text: 'Open', color: 'var(--gh-open)' },
+  completed: { icon: 'issue-closed', text: 'Closed', color: 'var(--gh-done)' },
+  not_planned: { icon: 'skip', text: 'Not planned', color: 'var(--gh-muted)' },
+};
+const state = data && states[data.state];
+---
+
+{
+  data && state ? (
+    <CardShell href={data.url} label={`Issue ${data.repo}#${data.number}: ${data.title}`}>
+      <div class="row">
+        <span class="state" style={`color: ${state.color}`} title={state.text}>
+          <Octicon name={state.icon} size={20} />
+        </span>
+        <div>
+          <span class="gh-muted">
+            {data.repo} #{data.number}
+          </span>
+          <h3>{data.title}</h3>
+          <Labels labels={data.labels} />
+          <div class="gh-meta gh-muted">
+            <span>
+              <Image class="gh-avatar" src={data.authorAvatar} alt="" width={20} height={20} />
+              {data.author}
+            </span>
+            <span>
+              {state.text} · <time datetime={data.closedAt ?? data.createdAt}>{formatDate(data.closedAt ?? data.createdAt)}</time>
+            </span>
+            {data.comments > 0 && (
+              <span>
+                <Octicon name="comment" /> {data.comments}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </CardShell>
+  ) : (
+    <Fallback href={`https://github.com/${repo}/issues/${number}`} text={`${repo}#${number}`} />
+  )
+}
+
+<style>
+  .row {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .state {
+    padding-top: 0.15rem;
+  }
+  h3 {
+    margin: 0.15rem 0 0;
+    font-size: 1.05rem;
+  }
+</style>

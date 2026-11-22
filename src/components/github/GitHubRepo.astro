@@ -1,0 +1,99 @@
+---
+import { Image } from 'astro:assets';
+import { compactNumber, getRepo, safe } from '@/lib/github';
+import CardShell from './CardShell.astro';
+import Fallback from './Fallback.astro';
+import Octicon from './Octicon.astro';
+import { languageColor } from './languageColors';
+
+interface Props {
+  /** "owner/name" */
+  repo: string;
+}
+
+const { repo } = Astro.props;
+const data = await safe(() => getRepo(repo), repo);
+---
+
+{
+  data ? (
+    <CardShell href={data.url} label={`GitHub repository ${data.fullName}`}>
+      <header>
+        <Image class="gh-avatar" src={data.ownerAvatar} alt="" width={40} height={40} />
+        <div>
+          <h3>
+            <Octicon name="repo" /> {data.fullName}
+          </h3>
+          {data.archived && <span class="gh-muted">Archived</span>}
+        </div>
+      </header>
+      {data.description && <p>{data.description}</p>}
+      {data.topics.length > 0 && (
+        <ul class="topics">
+          {data.topics.slice(0, 6).map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      )}
+      <div class="gh-meta gh-muted">
+        {data.language && (
+          <span>
+            <i class="lang" style={`background: ${languageColor(data.language)}`} />
+            {data.language}
+          </span>
+        )}
+        <span title={`${data.stars} stars`}>
+          <Octicon name="star" /> {compactNumber(data.stars)}
+        </span>
+        <span title={`${data.forks} forks`}>
+          <Octicon name="repo-forked" /> {compactNumber(data.forks)}
+        </span>
+        {data.license && (
+          <span>
+            <Octicon name="law" /> {data.license}
+          </span>
+        )}
+      </div>
+    </CardShell>
+  ) : (
+    <Fallback href={`https://github.com/${repo}`} text={repo} />
+  )
+}
+
+<style>
+  header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    word-break: break-word;
+  }
+  p {
+    margin: 0.6rem 0 0;
+    color: var(--gh-fg);
+  }
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .topics li {
+    padding: 0.05rem 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--gh-accent) 14%, transparent);
+    color: var(--gh-accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .lang {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+  }
+</style>

@@ -1,0 +1,21 @@
+---
+import { parseGitHubUrl } from '@/lib/github';
+import Fallback from './Fallback.astro';
+import GitHubIssue from './GitHubIssue.astro';
+import GitHubPR from './GitHubPR.astro';
+import GitHubRepo from './GitHubRepo.astro';
+
+interface Props {
+  /** Any repository, issue or pull request URL on github.com */
+  url: string;
+}
+
+const { url } = Astro.props;
+const parsed = parseGitHubUrl(url);
+if (!parsed) console.warn(`[github-cards] unsupported URL: ${url}`);
+---
+
+{parsed?.kind === 'repo' && <GitHubRepo repo={parsed.repo} />}
+{parsed?.kind === 'issue' && <GitHubIssue repo={parsed.repo} number={parsed.number} />}
+{parsed?.kind === 'pull' && <GitHubPR repo={parsed.repo} number={parsed.number} />}
+{!parsed && <Fallback href={url} text={url} />}

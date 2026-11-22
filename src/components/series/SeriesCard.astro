@@ -1,0 +1,72 @@
+---
+import type { Series } from '@/lib/series';
+
+interface Props {
+  series: Series;
+}
+
+const { series } = Astro.props;
+const published = series.parts.filter((p) => !p.data.draft).length;
+---
+
+<a class="card" href={`/series/${series.id}/`}>
+  <span class="stencil kicker">
+    Series · {series.parts.length} {series.parts.length === 1 ? 'part' : 'parts'}
+    {published < series.parts.length && ` (${published} published)`}
+    {series.data.status === 'ongoing' && ' · ongoing'}
+  </span>
+  <span class="title">{series.data.title}</span>
+  <span class="desc">{series.data.description}</span>
+  <span class="ticks" aria-hidden="true">
+    {series.parts.map((p) => <i class={p.data.draft ? 'todo' : 'done'} />)}
+  </span>
+</a>
+
+<style>
+  .card {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+    border: 2px solid var(--fg);
+    border-left: 6px solid var(--accent);
+    background: var(--surface);
+    text-decoration: none;
+  }
+  .card:hover .title {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+  .kicker {
+    color: var(--accent-ink);
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  /* One tick per part, like containers on a ship: filled when published. */
+  .ticks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 0.4rem;
+  }
+  .ticks i {
+    width: 1.1rem;
+    height: 0.5rem;
+    border: 1px solid var(--fg);
+  }
+  .ticks .done {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .ticks .todo {
+    border-style: dashed;
+    border-color: var(--muted);
+  }
+</style>

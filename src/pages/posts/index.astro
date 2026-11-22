@@ -1,0 +1,46 @@
+---
+import PostList from '@/components/PostList.astro';
+import SeriesCard from '@/components/series/SeriesCard.astro';
+import Base from '@/layouts/Base.astro';
+import { getPosts } from '@/lib/posts';
+import { getSeries } from '@/lib/series';
+
+const [posts, series] = await Promise.all([getPosts(), getSeries()]);
+---
+
+<Base title="Writing" description="Every post: articles, series, side projects and written versions of my conference talks.">
+  <h1>Writing</h1>
+  {
+    series.length > 0 && (
+      <section class="series">
+        <h2 class="stencil">Series</h2>
+        <div class="grid">
+          {series.map((s) => (
+            <SeriesCard series={s} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+  <h2 class="stencil">All posts</h2>
+  <PostList posts={posts} series={series} />
+</Base>
+
+<style>
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: 3rem;
+  }
+  h2 {
+    margin: 0 0 0.75rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .series {
+    margin-bottom: 2.5rem;
+  }
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+</style>

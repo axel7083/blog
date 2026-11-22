@@ -1,0 +1,195 @@
+---
+import CargoLabels from '@/components/CargoLabels.astro';
+import SeriesBox from '@/components/series/SeriesBox.astro';
+import SeriesPager from '@/components/series/SeriesPager.astro';
+import { isoDate, type Post } from '@/lib/posts';
+import type { SeriesContext } from '@/lib/series';
+import Base from './Base.astro';
+
+interface Props {
+  post: Post;
+  series?: SeriesContext;
+}
+
+const { post, series } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, talk, canonical } = post.data;
+
+const talkLinks = talk
+  ? [
+      { label: 'Event page', href: talk.url },
+      { label: 'Slides', href: talk.slides },
+      { label: 'Video', href: talk.video },
+    ].filter((l): l is { label: string; href: string } => !!l.href)
+  : [];
+---
+
+<Base title={title} description={description} canonical={canonical} article={{ published: pubDate, modified: updatedDate, tags }}>
+  <article>
+    <header>
+      <p class="meta stencil">
+        <time datetime={pubDate.toISOString()}>{isoDate(pubDate)}</time>
+        {
+          updatedDate && (
+            <>
+              {' · updated '}
+              <time datetime={updatedDate.toISOString()}>{isoDate(updatedDate)}</time>
+            </>
+          )
+        }
+        {` · ${post.readingMinutes} min read`}
+      </p>
+      <CargoLabels tags={tags} />
+      <h1>{title}</h1>
+      {
+        talk && (
+          <aside class="talk">
+            <span class="stencil">Origin</span>
+            <p>
+              Written version of my talk at <strong>{talk.event}</strong>,{' '}
+              <time datetime={talk.date.toISOString()}>{isoDate(talk.date)}</time>.
+              {talkLinks.map((l, i) => (
+                <>
+                  {i === 0 ? ' ' : ' · '}
+                  <a href={l.href} target="_blank" rel="noopener noreferrer">{l.label}</a>
+                </>
+              ))}
+            </p>
+          </aside>
+        )
+      }
+      {series && <SeriesBox context={series} />}
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+    {series && <SeriesPager context={series} />}
+  </article>
+</Base>
+
+<style>
+  .meta {
+    margin: 0 0 1rem;
+    color: var(--muted);
+  }
+  h1 {
+    margin: 1rem 0 1.5rem;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1.05;
+  }
+  .talk {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 2rem;
+    padding: 0.75rem 1rem;
+    border-left: 6px solid var(--accent);
+    background: var(--surface);
+  }
+  .talk p {
+    margin: 0;
+  }
+  .talk time {
+    white-space: nowrap;
+  }
+  .talk .stencil {
+    color: var(--accent-ink);
+  }
+  .prose :global(h2) {
+    margin-top: 2.5rem;
+    font-size: 1.6rem;
+  }
+  .prose :global(h2)::before {
+    content: '';
+    display: inline-block;
+    width: 0.45em;
+    height: 0.45em;
+    margin-right: 0.45em;
+    background: var(--accent);
+    vertical-align: 0.15em;
+  }
+  .prose :global(blockquote) {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 3px solid var(--border);
+    color: var(--muted);
+  }
+  /* GFM tables: full width, rules only, no box; the header matches the Sources label. Text columns wrap
+     and the type shrinks on narrow screens (below), so tables fit without scrolling. */
+  .prose :global(table) {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .prose :global(th) {
+    padding: 0 1rem 0.4rem 0;
+    border-bottom: 2px solid var(--fg);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: normal;
+    letter-spacing: 0.12em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .prose :global(td) {
+    padding: 0.5rem 1rem 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .prose :global(:is(th, td):last-child) {
+    padding-right: 0;
+  }
+  /* GFM column alignment (|---:|) arrives as an inline text-align. Right-aligned columns hold dates
+     and amounts: never wrap them, the table scrolls instead. */
+  .prose :global(:is(th, td)[style*='right']) {
+    white-space: nowrap;
+  }
+  /* GFM footnotes ([^1]) are how posts cite their sources. */
+  .prose :global(.footnotes) {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--fg);
+    font-size: 0.9rem;
+  }
+  /* The generated heading is screen-reader only; show a visible label instead. */
+  .prose :global(.footnotes)::before {
+    content: 'Sources';
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .prose :global(.footnotes li) {
+    margin-bottom: 0.35rem;
+    overflow-wrap: anywhere;
+  }
+  .prose :global(sup a[data-footnote-ref]) {
+    padding: 0 0.15em;
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    text-decoration: none;
+  }
+  .prose :global(sup a[data-footnote-ref])::before {
+    content: '[';
+  }
+  .prose :global(sup a[data-footnote-ref])::after {
+    content: ']';
+  }
+  @media (max-width: 30rem) {
+    .prose :global(table) {
+      font-size: 0.85rem;
+    }
+    .prose :global(:is(th, td)) {
+      padding-right: 0.6rem;
+    }
+    .talk {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+</style>

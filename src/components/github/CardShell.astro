@@ -1,0 +1,84 @@
+---
+/**
+ * Shared frame for every GitHub card: one link around a semantic <article>,
+ * so crawlers get a plain, followable URL and the whole card is clickable.
+ */
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a class="gh-card" href={href} aria-label={label} target="_blank" rel="noopener noreferrer">
+  <article>
+    <slot />
+  </article>
+</a>
+
+<style>
+  /* Cards use GitHub's palette, not the site's, so they stay recognizable. */
+  .gh-card {
+    --gh-bg: #ffffff;
+    --gh-fg: #1f2328;
+    --gh-muted: #59636e;
+    --gh-border: #d1d9e0;
+    --gh-accent: #0969da;
+    display: block;
+    margin: 1.5rem 0;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--gh-border);
+    border-radius: 12px;
+    background: var(--gh-bg);
+    color: var(--gh-fg);
+    /* GitHub's own font stack, so cards keep looking like GitHub inside the site's typography. */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      transform 0.15s;
+  }
+  .gh-card:hover,
+  .gh-card:focus-visible {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+:global([data-theme='dark']) .gh-card {
+    --gh-bg: #151b23;
+    --gh-fg: #e6edf3;
+    --gh-muted: #9198a1;
+    --gh-border: #3d444d;
+    --gh-accent: #4493f8;
+  }
+  .gh-card :global(h3) {
+    font-family: inherit;
+    letter-spacing: normal;
+  }
+  .gh-card :global(svg) {
+    fill: currentColor;
+    vertical-align: text-bottom;
+    flex-shrink: 0;
+  }
+  .gh-card :global(.gh-muted) {
+    color: var(--gh-muted);
+    font-size: 0.875rem;
+  }
+  .gh-card :global(.gh-meta) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1rem;
+    margin-top: 0.75rem;
+  }
+  .gh-card :global(.gh-meta > span) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .gh-card :global(.gh-avatar) {
+    border-radius: 50%;
+  }
+</style>

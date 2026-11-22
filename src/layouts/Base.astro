@@ -1,0 +1,92 @@
+---
+import { Font } from 'astro:assets';
+import type { ComponentProps } from 'astro/types';
+import Head from '@/components/seo/Head.astro';
+import ThemeToggle from '@/components/ThemeToggle.svelte';
+import { SITE } from '@/site';
+import '@/styles/global.css';
+
+type Props = ComponentProps<typeof Head>;
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <Head {...props} />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-display" />
+    <Font cssVariable="--font-mono" />
+    <script is:inline>
+      // Runs before first paint to avoid a flash of the wrong theme.
+      document.documentElement.dataset.theme =
+        localStorage.getItem('theme') ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container bar">
+        <a href="/" class="brand"><span aria-hidden="true">▣</span> AXEL7083<b>/</b>BLOG</a>
+        <nav>
+          <a href="/posts/" aria-current={/^\/(posts|series)\//.test(Astro.url.pathname) ? 'page' : undefined}>Writing</a>
+          <ThemeToggle client:only="svelte" />
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="container">
+      <div class="site-footer stencil">
+        <span>© {new Date().getFullYear()} {SITE.author}</span>
+        <a href={SITE.authorUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    background: var(--frame);
+    color: var(--frame-fg);
+    border-bottom: 6px solid var(--accent);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 3.75rem;
+  }
+  .brand,
+  nav a {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .brand b {
+    color: var(--accent);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--accent);
+  }
+  main {
+    padding-block: 2.5rem 4rem;
+  }
+  .site-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-block: 1.5rem 2.5rem;
+    border-top: 2px solid var(--fg);
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,134 @@
+/*
+ * Steel, hull grey and one container-orange accent. Tags are cargo labels.
+ * Keep the container metaphor in the chrome, never in the prose.
+ */
+:root {
+  color-scheme: light;
+  --bg: #e4e7eb;
+  --surface: #ffffff;
+  --fg: #14202e;
+  --muted: #5b6775;
+  --border: #c3cad2;
+  --frame: #14202e;
+  --frame-fg: #e4e7eb;
+  --accent: #e8622c;
+  --accent-ink: #b8461a;
+  --gh-open: #1a7f37;
+  --gh-done: #8250df;
+  --gh-closed: #d1242f;
+  --max-width: 48rem;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f1822;
+  --surface: #16212d;
+  --fg: #e4e7eb;
+  --muted: #8c98a6;
+  --border: #2a3746;
+  --frame: #0a1119;
+  --frame-fg: #e4e7eb;
+  --accent: #f07a45;
+  --accent-ink: #f59869;
+  --gh-open: #3fb950;
+  --gh-done: #ab7df8;
+  --gh-closed: #f85149;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--accent-ink);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+}
+
+:not(pre) > code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 0.85em;
+}
+
+pre.astro-code {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 6px solid var(--accent);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* Small uppercase mono text used for metadata and labels. */
+.stencil {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Visually hidden, still read by screen readers (e.g. the generated footnotes heading). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

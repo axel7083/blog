@@ -1,0 +1,38 @@
+---
+import type { Label } from '@/lib/github';
+
+interface Props {
+  labels: Label[];
+}
+
+const { labels } = Astro.props;
+---
+
+{
+  labels.length > 0 && (
+    <ul class="labels">
+      {labels.map((l) => (
+        <li style={`--label: #${l.color}`}>{l.name}</li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    padding: 0.05rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--label) 60%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--label) 18%, transparent);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+</style>

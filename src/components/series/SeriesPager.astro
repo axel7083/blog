@@ -1,0 +1,73 @@
+---
+import type { SeriesContext } from '@/lib/series';
+
+interface Props {
+  context: SeriesContext;
+}
+
+const { series, prev, next } = Astro.props.context;
+---
+
+<nav class="pager" aria-label={`More from ${series.data.title}`}>
+  {
+    prev ? (
+      <a class="prev" href={`/posts/${prev.id}/`} rel="prev">
+        <span class="stencil">← Previous part</span>
+        <span class="t">{prev.data.title}</span>
+      </a>
+    ) : (
+      <span />
+    )
+  }
+  {
+    next ? (
+      <a class="next" href={`/posts/${next.id}/`} rel="next">
+        <span class="stencil">Next part →</span>
+        <span class="t">{next.data.title}</span>
+      </a>
+    ) : (
+      <a class="next" href={`/series/${series.id}/`}>
+        <span class="stencil">{series.data.status === 'ongoing' ? 'More parts coming' : 'End of series'}</span>
+        <span class="t">Back to “{series.data.title}”</span>
+      </a>
+    )
+  }
+</nav>
+
+<style>
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--fg);
+  }
+  a {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+  }
+  a:hover {
+    border-color: var(--accent);
+  }
+  .next {
+    text-align: right;
+  }
+  .stencil {
+    color: var(--muted);
+  }
+  .t {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  @media (max-width: 36rem) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

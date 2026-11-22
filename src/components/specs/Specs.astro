@@ -1,0 +1,19 @@
+---
+// A grid of hardware specs: <Specs><Spec icon="cpu" label="CPU">…</Spec>…</Specs>. Rules only, like tables.
+---
+
+<dl class="specs"><slot /></dl>
+
+<style>
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 30rem) {
+    .specs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
