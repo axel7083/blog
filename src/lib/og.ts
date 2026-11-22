@@ -8,6 +8,9 @@ import satori from 'satori';
 const require = createRequire(import.meta.url);
 const font = (pkg: string, file: string) => readFile(require.resolve(`@fontsource/${pkg}/files/${file}`));
 
+// The AS monogram, as in the site header (public/icon-192.png, downscaled by satori).
+const monogram = readFile('public/icon-192.png').then((png) => `data:image/png;base64,${png.toString('base64')}`);
+
 const fonts = Promise.all([
   font('ibm-plex-sans-condensed', 'ibm-plex-sans-condensed-latin-700-normal.woff'),
   font('ibm-plex-mono', 'ibm-plex-mono-latin-500-normal.woff'),
@@ -40,9 +43,7 @@ export async function renderOgImage({ title, kicker, meta }: OgCard): Promise<Bu
   const size = title.length > 70 ? 64 : title.length > 45 ? 76 : 88;
   const card = el('div', { display: 'flex', flexDirection: 'column', width: '100%', height: '100%', background: STEEL }, [
     el('div', { display: 'flex', alignItems: 'center', padding: '44px 64px 36px', fontFamily: 'Mono', fontSize: 30, letterSpacing: 4, color: HULL }, [
-      el('div', { display: 'flex', width: 30, height: 30, border: `4px solid ${HULL}`, alignItems: 'center', justifyContent: 'center', marginRight: 18 }, [
-        el('div', { width: 12, height: 12, background: ORANGE }),
-      ]),
+      { type: 'img', props: { src: await monogram, width: 48, height: 48, style: { borderRadius: 8, marginRight: 20 } } },
       'AXEL7083',
       el('span', { color: ORANGE }, '/'),
       'BLOG',
