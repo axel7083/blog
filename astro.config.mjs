@@ -7,13 +7,24 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 
 import externalLinks from './src/lib/external-links.mjs';
+import { postDates } from './src/lib/post-dates.mjs';
+
+const lastModified = postDates();
 
 // https://astro.build/config
 export default defineConfig({
   // Custom domain, set in the GitHub Pages settings (DNS: CNAME axel → axel7083.github.io).
   site: 'https://axel.stefanini.dev',
   trailingSlash: 'always',
-  integrations: [mdx(), svelte(), sitemap()],
+  integrations: [
+    mdx(),
+    svelte(),
+    sitemap({
+      // Search engines recrawl what changed: posts get their updated (or publication) date.
+      serialize: (item) => ({ ...item, lastmod: lastModified.get(new URL(item.url).pathname) ?? item.lastmod }),
+      filter: (page) => !page.includes('/og/'),
+    }),
+  ],
   image: {
     // GitHub avatars are downloaded and optimized at build time.
     domains: ['avatars.githubusercontent.com'],

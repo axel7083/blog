@@ -15,7 +15,7 @@ const { Content } = await render(series);
 const minutes = series.parts.reduce((sum, p) => sum + p.readingMinutes, 0);
 ---
 
-<Base title={series.data.title} description={series.data.description}>
+<Base title={series.data.title} description={series.data.description} image={`/og/series/${series.id}.png`}>
   <p class="meta stencil">
     Series · {series.parts.length} parts · {minutes} min read in total{series.data.status === 'ongoing' && ' · ongoing'}
   </p>

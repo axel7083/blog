@@ -27,7 +27,7 @@ const props = Astro.props;
   <body>
     <header class="site-header">
       <div class="container bar">
-        <a href="/" class="brand"><span aria-hidden="true">▣</span> AXEL7083<b>/</b>BLOG</a>
+        <a href="/" class="brand"><img src="/favicon-96.png" alt="" width="24" height="24" /><span>AXEL7083<b>/</b>BLOG</span></a>
         <nav>
           <a href="/posts/" aria-current={/^\/(posts|series)\//.test(Astro.url.pathname) ? 'page' : undefined}>Writing</a>
           <ThemeToggle client:only="svelte" />
@@ -66,6 +66,17 @@ const props = Astro.props;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     text-decoration: none;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  /* The AS monogram, same file as the favicon. */
+  .brand img {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
   }
   .brand b {
     color: var(--accent);
