@@ -23,7 +23,18 @@ const talkLinks = talk
   : [];
 ---
 
-<Base title={title} description={description} canonical={canonical} article={{ published: pubDate, modified: updatedDate, tags }}>
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  image={`/og/posts/${post.id}.png`}
+  article={{
+    published: pubDate,
+    modified: updatedDate,
+    tags,
+    series: series && { title: series.series.data.title, url: new URL(`/series/${series.series.id}/`, Astro.site).href },
+  }}
+>
   <article>
     <header>
       <p class="meta stencil">
